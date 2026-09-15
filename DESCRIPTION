@@ -1,10 +1,13 @@
 Package: florencia
-Title: What the Package Does (One Line, Title Case)
+Title: Detect and Correct Structural Errors in Datasets
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Linda", "Cabrera Orellana", , "lindateachtech@gmail.com",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1492-2546"))
+Description: Provides tools to detect and correct common structural errors in messy datasets, including wide versus long format inconsistencies, embedded sub-headers, cells containing multiple values, mixed data types within a column, inconsistent categorical values (case, whitespace, accents), duplicated rows or columns, and visual formatting used to encode information (such as bold text or cell color). Designed for non-technical users without a strong background in data wrangling.
 License: MIT + file LICENSE
 Encoding: UTF-8
+Language: es
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
