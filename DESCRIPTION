@@ -16,3 +16,8 @@ BugReports: https://github.com/lindateachtech/florencia/issues
 Depends: 
     R (>= 3.5)
 LazyData: true
+Imports: 
+    cli
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
