@@ -16,10 +16,13 @@
 #' la mitad de columnas con nombre se considera sana.
 #'
 #' @return De forma invisible, un data.frame con las columnas `fila`,
-#'   `problema`, `detalle`, `importancia` y `solucion_recomendada`, útil
-#'   para uso programático, por ejemplo, desde una función que
-#'   combine varios diagnósticos, o desde pruebas con testthat. Al
-#'   llamarla directamente, la función también imprime un mensaje
+#'   `columna`, `contenido`, `problema`, `detalle`, `importancia` y
+#'   `solucion_recomendada`, útil para uso programático, por ejemplo,
+#'   desde una función que combine varios diagnósticos, o desde pruebas
+#'   con testthat. En esta función `fila` y `columna` quedan en `NA`, y
+#'   `contenido` reúne los nombres de columna válidos, separados por
+#'   `" | "`. Si no se detecta el problema, el data.frame tiene 0 filas.
+#'   Al llamarla directamente, la función también imprime un mensaje
 #'   legible en consola indicando si se detectó o no el problema.
 #'
 #' @examples
@@ -48,6 +51,8 @@ detecta_encabezado <- function(datos) {
     cli::cli_inform(c("v" = "No se detecto un encabezado desplazado."))
     return(invisible(data.frame(
       fila = integer(0),
+      columna = integer(0),
+      contenido = character(0),
       problema = character(0),
       detalle = character(0),
       importancia = character(0),
@@ -71,6 +76,7 @@ detecta_encabezado <- function(datos) {
     "Usa corrige_encabezado() para promover la fila correcta a",
     "nombres de columna."
   )
+  contenido <- paste(nombres[con_nombre], collapse = " | ")
 
   cli::cli_inform(c(
     "!" = "{.strong Problema:} {problema}",
@@ -83,6 +89,8 @@ detecta_encabezado <- function(datos) {
 
   invisible(data.frame(
     fila = NA_integer_,
+    columna = NA_integer_,
+    contenido = contenido,
     problema = problema,
     detalle = detalle,
     importancia = importancia,

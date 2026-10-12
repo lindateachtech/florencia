@@ -11,10 +11,13 @@ detecta_encabezado(datos)
 }
 \value{
 De forma invisible, un data.frame con las columnas \code{fila},
-\code{problema}, \code{detalle}, \code{importancia} y \code{solucion_recomendada}, útil
-para uso programático, por ejemplo, desde una función que
-combine varios diagnósticos, o desde pruebas con testthat. Al
-llamarla directamente, la función también imprime un mensaje
+\code{columna}, \code{contenido}, \code{problema}, \code{detalle}, \code{importancia} y
+\code{solucion_recomendada}, útil para uso programático, por ejemplo,
+desde una función que combine varios diagnósticos, o desde pruebas
+con testthat. En esta función \code{fila} y \code{columna} quedan en \code{NA}, y
+\code{contenido} reúne los nombres de columna válidos, separados por
+\code{" | "}. Si no se detecta el problema, el data.frame tiene 0 filas.
+Al llamarla directamente, la función también imprime un mensaje
 legible en consola indicando si se detectó o no el problema.
 }
 \description{

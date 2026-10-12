@@ -1,13 +1,24 @@
-test_that("detecta_encabezado detecta un encabezado desplazado", {
+test_that("detecta_encabezado detecta un encabezado desplazado con cervecero", {
   resultado <- suppressMessages(detecta_encabezado(cervecero))
 
-  expect_s3_class(resultado, "data.frame")
+  expect_equal(nrow(resultado), 1)
   expect_equal(
     colnames(resultado),
-    c("fila", "problema", "detalle", "importancia", "solucion_recomendada")
+    c(
+      "fila",
+      "columna",
+      "contenido",
+      "problema",
+      "detalle",
+      "importancia",
+      "solucion_recomendada"
+    )
   )
-  expect_equal(nrow(resultado), 1)
   expect_equal(resultado$problema, "Posible encabezado desplazado.")
+  expect_equal(
+    resultado$contenido,
+    "Datos Sectoriales de la industria cervecera"
+  )
 })
 
 test_that("detecta_encabezado no marca falso positivo en datos sanos", {
@@ -16,6 +27,7 @@ test_that("detecta_encabezado no marca falso positivo en datos sanos", {
 
   expect_s3_class(resultado, "data.frame")
   expect_equal(nrow(resultado), 0)
+  expect_equal(ncol(resultado), 7)
 })
 
 test_that("detecta_encabezado detecta pocos nombres en una tabla ancha", {
