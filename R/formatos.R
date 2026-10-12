@@ -19,11 +19,13 @@
 #'   `columna`, `contenido`, `problema`, `detalle`, `importancia` y
 #'   `solucion_recomendada`, útil para uso programático, por ejemplo,
 #'   desde una función que combine varios diagnósticos, o desde pruebas
-#'   con testthat. En esta función `fila` y `columna` quedan en `NA`, y
-#'   `contenido` reúne los nombres de columna válidos, separados por
-#'   `" | "`. Si no se detecta el problema, el data.frame tiene 0 filas.
-#'   Al llamarla directamente, la función también imprime un mensaje
-#'   legible en consola indicando si se detectó o no el problema.
+#'   con testthat. `fila` es la primera fila del data.frame con al menos
+#'   el 50 % de celdas con contenido, candidata a encabezado real, y `NA`
+#'   si no se localiza ninguna. `columna` queda en `NA`, y `contenido`
+#'   reúne los nombres de columna válidos, separados por `" | "`. Si no
+#'   se detecta el problema, el data.frame tiene 0 filas. Al llamarla
+#'   directamente, la función también imprime un mensaje legible en
+#'   consola indicando si se detectó o no el problema.
 #'
 #' @examples
 #' detecta_encabezado(cervecero)
@@ -60,21 +62,31 @@ detecta_encabezado <- function(datos) {
     )))
   }
 
+  # Primera fila con al menos el 50 % de celdas con contenido
+  celdas <- as.matrix(datos)
+  llena <- !is.na(celdas) & trimws(celdas) != ""
+  fila <- which(rowMeans(llena) >= 0.5)[1]
+
+  localizacion <- if (is.na(fila)) {
+    "No se pudo localizar la fila del encabezado real."
+  } else {
+    paste0("El encabezado real parece estar en la fila ", fila, ".")
+  }
+
   problema <- "Posible encabezado desplazado."
   detalle <- paste(
-    "El encabezado real del conjunto de datos parece estar",
-    "desplazado, debido a que la mayoria de las columnas no",
-    "tienen nombre."
+    "El encabezado real del conjunto de datos parece estar desplazado,",
+    "debido a que la mayoria de las columnas no tienen nombre.",
+    localizacion
   )
   importancia <- paste(
-    "Si el encabezado esta mal ubicado, absolutamente todo lo",
-    "demas queda afectado porque no se puede referenciar ninguna",
-    "columna por su nombre real, y los calculos que dependen de",
-    "tipos de datos van a fallar."
+    "Si el encabezado esta mal ubicado, absolutamente todo lo demas queda",
+    "afectado porque no se puede referenciar ninguna columna por su nombre",
+    "real, y los calculos que dependen de tipos de datos van a fallar."
   )
   solucion_recomendada <- paste(
-    "Usa corrige_encabezado() para promover la fila correcta a",
-    "nombres de columna."
+    "Usa corrige_encabezado() para promover la fila correcta a nombres",
+    "de columna."
   )
   contenido <- paste(nombres[con_nombre], collapse = " | ")
 
@@ -88,7 +100,7 @@ detecta_encabezado <- function(datos) {
   ))
 
   invisible(data.frame(
-    fila = NA_integer_,
+    fila = fila,
     columna = NA_integer_,
     contenido = contenido,
     problema = problema,

@@ -19,6 +19,7 @@ test_that("detecta_encabezado detecta un encabezado desplazado con cervecero", {
     resultado$contenido,
     "Datos Sectoriales de la industria cervecera"
   )
+  expect_equal(resultado$fila, 1L)
 })
 
 test_that("detecta_encabezado no marca falso positivo en datos sanos", {
@@ -38,6 +39,21 @@ test_that("detecta_encabezado detecta pocos nombres en una tabla ancha", {
   expect_equal(nrow(resultado), 1)
 })
 
+test_that("detecta_encabezado localiza el encabezado real bajo titulo, fecha y paginas", {
+  datos <- as.data.frame(matrix(NA_character_, nrow = 5, ncol = 5))
+  names(datos) <- c("Informe de ventas", rep("", 4))
+  datos[1, 1] <- "Fecha: 2026-01-01"
+  datos[2, 1] <- "Pagina 1"
+  datos[3, ] <- c("pais", "precio", "volumen", "anio", "region")
+  datos[4, ] <- c("Ecuador", "10", "100", "2025", "Costa")
+  datos[5, ] <- c("Peru", "12", "80", "2025", "Sierra")
+
+  resultado <- suppressMessages(detecta_encabezado(datos))
+
+  expect_equal(nrow(resultado), 1)
+  expect_equal(resultado$fila, 3L)
+})
+
 test_that("detecta_encabezado considera sana la mitad exacta con nombre", {
   datos_mitad <- data.frame(a = 1, b = 2)
   names(datos_mitad) <- c("a", "")
@@ -45,7 +61,6 @@ test_that("detecta_encabezado considera sana la mitad exacta con nombre", {
 
   expect_equal(nrow(resultado), 0)
 })
-
 
 test_that("detecta_encabezado imprime el mensaje esperado", {
   expect_snapshot(detecta_encabezado(cervecero))
@@ -57,4 +72,27 @@ test_that("detecta_encabezado rechaza un input que no es data.frame", {
 
 test_that("detecta_encabezado rechaza un data.frame sin columnas", {
   expect_snapshot(detecta_encabezado(data.frame()), error = TRUE)
+})
+
+test_that("detecta_encabezado devuelve fila NA si ninguna fila llega al 50 %", {
+  datos <- as.data.frame(matrix(NA_character_, nrow = 3, ncol = 5))
+  names(datos) <- c("Informe de ventas", rep("", 4))
+  datos[1, 1] <- "Fecha: 2026-01-01"
+  datos[2, 1] <- "Pagina 1"
+  datos[3, 1] <- "Confidencial"
+
+  resultado <- suppressMessages(detecta_encabezado(datos))
+
+  expect_equal(nrow(resultado), 1)
+  expect_true(is.na(resultado$fila))
+})
+
+test_that("detecta_encabezado avisa si no puede localizar la fila del encabezado", {
+  datos <- as.data.frame(matrix(NA_character_, nrow = 3, ncol = 5))
+  names(datos) <- c("Informe de ventas", rep("", 4))
+  datos[1, 1] <- "Fecha: 2026-01-01"
+  datos[2, 1] <- "Pagina 1"
+  datos[3, 1] <- "Confidencial"
+
+  expect_snapshot(detecta_encabezado(datos))
 })
