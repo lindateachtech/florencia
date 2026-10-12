@@ -1,4 +1,4 @@
-#' Detecta encabezados desplazados
+#' Detecta un encabezado desplazado
 #'
 #' Revisa si los nombres de columna de un conjunto de datos parecen
 #' provenir de una fila de título incrustada en el archivo original, o
@@ -7,12 +7,13 @@
 #' @param datos Un data.frame o tibble a revisar.
 #'
 #' @details
-#' Esta función asume que estamos trabajando con conjuntos de datos de
-#' varias columnas, como los que se generan normalmente para análisis de
-#' datos. Si se aplica a una tabla genuinamente pequeña (dos o
-#' tres columnas en total), puede marcar un falso positivo, ya que
-#' la lógica de detección se basa en cuántas columnas tienen nombre,
-#' sin considerar el total de columnas del conjunto de datos.
+#' La función calcula qué proporción de las columnas tiene un nombre
+#' real (ni vacío ni `NA`). Si menos de la mitad de las columnas tiene
+#' nombre, se considera que el encabezado está desplazado. Este corte
+#' es una heurística fija, no un valor ajustable y sirve tanto para
+#' tablas anchas con un título de pocas celdas en la primera fila como
+#' para tablas con una sola celda de título. Una tabla con exactamente
+#' la mitad de columnas con nombre se considera sana.
 #'
 #' @return De forma invisible, un data.frame con las columnas `fila`,
 #'   `problema`, `detalle`, `importancia` y `solucion_recomendada`, útil
@@ -22,10 +23,10 @@
 #'   legible en consola indicando si se detectó o no el problema.
 #'
 #' @examples
-#' detecta_encabezados(cervecero)
+#' detecta_encabezado(cervecero)
 #'
 #' @export
-detecta_encabezados <- function(datos) {
+detecta_encabezado <- function(datos) {
   if (!is.data.frame(datos)) {
     cli::cli_abort(c(
       "x" = "{.arg datos} debe ser un data.frame o tibble.",
@@ -33,11 +34,18 @@ detecta_encabezados <- function(datos) {
     ))
   }
 
-  nombres <- names(datos)
-  nombres_reales <- sum(nombres != "" & !is.na(nombres))
+  if (ncol(datos) == 0) {
+    cli::cli_abort(c(
+      "x" = "{.arg datos} no tiene columnas.",
+      "i" = "No hay encabezado que revisar en un data.frame vacio."
+    ))
+  }
 
-  if (nombres_reales > 2) {
-    cli::cli_inform(c("v" = "No se detectaron encabezados desplazados."))
+  nombres <- names(datos)
+  con_nombre <- nombres != "" & !is.na(nombres)
+
+  if (mean(con_nombre) >= 0.5) {
+    cli::cli_inform(c("v" = "No se detecto un encabezado desplazado."))
     return(invisible(data.frame(
       fila = integer(0),
       problema = character(0),
@@ -55,12 +63,12 @@ detecta_encabezados <- function(datos) {
   )
   importancia <- paste(
     "Si el encabezado esta mal ubicado, absolutamente todo lo",
-    "demas queda afectado: no se puede referenciar ninguna",
+    "demas queda afectado porque no se puede referenciar ninguna",
     "columna por su nombre real, y los calculos que dependen de",
     "tipos de datos van a fallar."
   )
   solucion_recomendada <- paste(
-    "Usa corrige_encabezados() para promover la fila correcta a",
+    "Usa corrige_encabezado() para promover la fila correcta a",
     "nombres de columna."
   )
 
@@ -68,7 +76,7 @@ detecta_encabezados <- function(datos) {
     "!" = "{.strong Problema:} {problema}",
     "i" = "{.strong Detalle:} {detalle}",
     "i" = paste(
-      "{.strong Solucion recomendada:} Usa {.fn corrige_encabezados}",
+      "{.strong Solucion recomendada:} Usa {.fn corrige_encabezado}",
       "para promover la fila correcta a nombres de columna."
     )
   ))
