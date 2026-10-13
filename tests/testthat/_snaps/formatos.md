@@ -4,8 +4,8 @@
       detecta_encabezado(cervecero)
     Message
       ! Problema: Posible encabezado desplazado.
-      i Detalle: El encabezado real del conjunto de datos parece estar desplazado, debido a que la mayoria de las columnas no tienen nombre. El encabezado real parece estar en la fila 1.
-      i Solucion recomendada: Usa `corrige_encabezado()` para promover la fila correcta a nombres de columna.
+      i Detalle: El encabezado real del conjunto de datos parece estar desplazado. El encabezado real parece estar en la fila 1.
+      i Solucion: Promueve el encabezado real a nombres de columna.
 
 # detecta_encabezado rechaza un input que no es data.frame
 
@@ -31,6 +31,6 @@
       detecta_encabezado(datos)
     Message
       ! Problema: Posible encabezado desplazado.
-      i Detalle: El encabezado real del conjunto de datos parece estar desplazado, debido a que la mayoria de las columnas no tienen nombre. No se pudo localizar la fila del encabezado real.
-      i Solucion recomendada: Usa `corrige_encabezado()` para promover la fila correcta a nombres de columna.
+      i Detalle: El encabezado real del conjunto de datos parece estar desplazado. No se pudo localizar la fila del encabezado real.
+      i Solucion: Promueve el encabezado real a nombres de columna.
 

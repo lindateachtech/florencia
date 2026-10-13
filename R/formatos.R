@@ -75,8 +75,7 @@ detecta_encabezado <- function(datos) {
 
   problema <- "Posible encabezado desplazado."
   detalle <- paste(
-    "El encabezado real del conjunto de datos parece estar desplazado,",
-    "debido a que la mayoria de las columnas no tienen nombre.",
+    "El encabezado real del conjunto de datos parece estar desplazado.",
     localizacion
   )
   importancia <- paste(
@@ -85,18 +84,14 @@ detecta_encabezado <- function(datos) {
     "real, y los calculos que dependen de tipos de datos van a fallar."
   )
   solucion_recomendada <- paste(
-    "Usa corrige_encabezado() para promover la fila correcta a nombres",
-    "de columna."
+    "Promueve el encabezado real a nombres de columna."
   )
   contenido <- paste(nombres[con_nombre], collapse = " | ")
 
   cli::cli_inform(c(
     "!" = "{.strong Problema:} {problema}",
     "i" = "{.strong Detalle:} {detalle}",
-    "i" = paste(
-      "{.strong Solucion recomendada:} Usa {.fn corrige_encabezado}",
-      "para promover la fila correcta a nombres de columna."
-    )
+    "i" = "{.strong Solucion:} {solucion_recomendada}"
   ))
 
   invisible(data.frame(
