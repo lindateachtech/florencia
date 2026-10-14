@@ -2,3 +2,4 @@
 
 export(detecta_columnas_vacias)
 export(detecta_encabezado)
+export(detecta_subencabezados)
